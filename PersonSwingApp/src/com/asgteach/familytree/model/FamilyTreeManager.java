@@ -8,13 +8,10 @@
  *
  *
  */
-
-
-
 /*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package com.asgteach.familytree.model;
 
@@ -32,6 +29,7 @@ import java.util.function.Consumer;
  * @author GiorgioP
  */
 public class FamilyTreeManager {
+
     private final Map<Long, Person> personMap = new HashMap<>();
     private PropertyChangeSupport pcs = null;
     private static FamilyTreeManager instance = null;
@@ -76,9 +74,9 @@ public class FamilyTreeManager {
         pcs.removePropertyChangeListener(listener);
     }
 
-    private static final String PROP_PERSON_DESTROYED = "removePerson";
-    private static final String PROP_PERSON_ADDED = "addPerson";
-    private static final String PROP_PERSON_UPDATED = "updatePerson";
+    public static final String PROP_PERSON_DESTROYED = "removePerson";
+    public static final String PROP_PERSON_ADDED = "addPerson";
+    public static final String PROP_PERSON_UPDATED = "updatePerson";
 
     /**
      * Method description
@@ -136,8 +134,8 @@ public class FamilyTreeManager {
 //                copyList.add(new Person(p));
 //            }
 //        });
-          personMap.values().forEach(p->copyList.add(new Person(p)));
+        personMap.values().forEach(p -> copyList.add(new Person(p)));
         return copyList;
-        
+
     }
 }

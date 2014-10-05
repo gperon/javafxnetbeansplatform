@@ -196,6 +196,10 @@ public class Person implements Serializable {
     public Gender getGender() {
         return gender;
     }
+    
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
 
     private static long count = 0;
 

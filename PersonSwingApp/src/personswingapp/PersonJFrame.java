@@ -5,7 +5,23 @@
  */
 package personswingapp;
 
+import com.asgteach.familytree.model.FamilyTreeManager;
+import com.asgteach.familytree.model.Person;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  *
@@ -14,11 +30,45 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class PersonJFrame extends javax.swing.JFrame {
 
     private final DefaultMutableTreeNode top = new DefaultMutableTreeNode("People");
+    private final FamilyTreeManager ftm = FamilyTreeManager.getInstance();
+    private Person thePerson;
+    private static final Logger logger = Logger.getLogger(PersonJFrame.class.getName());
+
     /**
      * Creates new form PersonJFrame
      */
-    public PersonJFrame() {
+    private PersonJFrame() {
+        logger.setLevel(Level.FINE);
+        /* define handler to display messages on the console */
+        Handler handler = new ConsoleHandler();
+        handler.setLevel(Level.FINE);
+        logger.addHandler(handler);
+        try {
+            /* define a second handler to write messages to a file */
+            Handler fileHandler = new FileHandler();
+            fileHandler.setLevel(Level.FINE);
+            logger.addHandler(fileHandler);
+            logger.log(Level.FINE, "Cretaed File Handler");
+        } catch (IOException | SecurityException ex) {
+            logger.log(Level.SEVERE, "Couldn't create FileHandler", ex);
+        }
+
+        buildData();
         initComponents();
+        personTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        createNodes(top);
+    }
+
+    private void configureListeners() {
+        ftm.addPropertyChangeListener(familyTreeListener);
+        personTree.addTreeSelectionListener(treeSelectionListener);
+        updateButton.addActionListener(updateListener);
+    }
+
+    public static PersonJFrame newInstance() {
+        PersonJFrame pjf = new PersonJFrame();
+        pjf.configureListeners();
+        return pjf;
     }
 
     /**
@@ -45,9 +95,9 @@ public class PersonJFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         lastTextField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        updateButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        personTree = new javax.swing.JTree();
+        personTree = new javax.swing.JTree(top);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,7 +113,11 @@ public class PersonJFrame extends javax.swing.JFrame {
             }
         });
 
-        suffixTextField.setText("jTextField4");
+        suffixTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                suffixTextFieldActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(femaleButton);
         femaleButton.setText("Female");
@@ -85,10 +139,10 @@ public class PersonJFrame extends javax.swing.JFrame {
 
         jLabel4.setText("Suffix:");
 
-        jButton1.setText("Update");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        updateButton.setText("Update");
+        updateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                updateButtonActionPerformed(evt);
             }
         });
 
@@ -100,7 +154,7 @@ public class PersonJFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(updateButton)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,8 +203,8 @@ public class PersonJFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addGap(0, 38, Short.MAX_VALUE))
+                .addComponent(updateButton)
+                .addGap(0, 82, Short.MAX_VALUE))
         );
 
         jScrollPane1.setViewportView(personTree);
@@ -160,19 +214,20 @@ public class PersonJFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20))
         );
 
         pack();
@@ -186,9 +241,13 @@ public class PersonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_firstTextFieldActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_updateButtonActionPerformed
+
+    private void suffixTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_suffixTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_suffixTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -199,28 +258,24 @@ public class PersonJFrame extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PersonJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PersonJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PersonJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PersonJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            logger.log(Level.SEVERE, "Coulnd't apply Nimbus look and feel", ex);
+//        }
+        //</editor-fold>
+
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PersonJFrame().setVisible(true);
+                PersonJFrame.newInstance().setVisible(true);
             }
         });
     }
@@ -229,7 +284,6 @@ public class PersonJFrame extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JRadioButton femaleButton;
     private javax.swing.JTextField firstTextField;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -244,5 +298,95 @@ public class PersonJFrame extends javax.swing.JFrame {
     private javax.swing.JTree personTree;
     private javax.swing.JTextField suffixTextField;
     private javax.swing.JRadioButton unknowButton;
+    private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
+
+    private void buildData() {
+        ftm.addPerson(new Person("Homer", "Simpson", Person.Gender.MALE));
+        ftm.addPerson(new Person("Marge", "Simpson", Person.Gender.FEMALE));
+        ftm.addPerson(new Person("Bart", "Simpson", Person.Gender.MALE));
+        ftm.addPerson(new Person("Lisa", "Simpson", Person.Gender.FEMALE));
+        ftm.addPerson(new Person("Maggie", "Simpson", Person.Gender.FEMALE));
+        logger.log(Level.FINE, ftm.getAllPeople().toString());
+    }
+
+    private void createNodes(DefaultMutableTreeNode top) {
+        /* build JTree model using FamilyTreeManager */
+        ftm.getAllPeople().forEach(p -> top.add(new DefaultMutableTreeNode(p)));
+    }
+
+    private void updateModel() {
+        thePerson.setFirstname(firstTextField.getText());
+        thePerson.setMiddlename(middleTextField.getText());
+        thePerson.setLastname(lastTextField.getText());
+        thePerson.setSuffix(suffixTextField.getText());
+        if (maleButton.isSelected()) {
+            thePerson.setGender(Person.Gender.MALE);
+        } else if (femaleButton.isSelected()) {
+            thePerson.setGender(Person.Gender.FEMALE);
+        } else if (unknowButton.isSelected()) {
+            thePerson.setGender(Person.Gender.UNKNOW);
+        }
+        thePerson.setNotes(noteTextArea.getText());
+    }
+    
+    /* define listener */
+    private final ActionListener updateListener = (ActionEvent evt) -> {
+        updateModel();
+    };
+    
+    private final PropertyChangeListener familyTreeListener = (PropertyChangeEvent evt) -> {
+        if (evt.getNewValue() != null && evt.getPropertyName().equals(FamilyTreeManager.PROP_PERSON_UPDATED)) {
+            Person person = (Person) evt.getNewValue();
+            DefaultTreeModel model = (DefaultTreeModel) personTree.getModel();
+            for (int i = 0; i < model.getChildCount(top); i++) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) model.getChild(top, i);
+                if (person.equals(node.getUserObject())) {
+                    node.setUserObject(person);
+                    /* let the model know we made a change */
+                    model.nodeChanged(node);
+                    logger.log(Level.FINE, "Node updated: {0}", node);
+                    break;
+                }
+
+            }
+        }
+    };
+    private final TreeSelectionListener treeSelectionListener = (TreeSelectionEvent evt) -> {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) personTree.getLastSelectedPathComponent();
+        if (null == node) {
+            updateButton.setEnabled(false);
+            return;
+        }
+        if (node.isLeaf()) {
+            Person person = (Person) node.getUserObject();
+            logger.log(Level.FINE, "{0} selected", person);
+            editPerson(person);
+        } else {
+            updateButton.setEnabled(false);
+        }
+    };
+
+    private void editPerson(Person person) {
+        thePerson = person;
+        updateForm();
+    }
+
+    private void updateForm() {
+        firstTextField.setText(thePerson.getFirstname());
+        middleTextField.setText(thePerson.getMiddlename());
+        lastTextField.setText(thePerson.getLastname());
+        suffixTextField.setText(thePerson.getSuffix());
+        if (thePerson.getGender() == Person.Gender.MALE) {
+            maleButton.setSelected(true);
+        } else if (thePerson.getGender() == Person.Gender.FEMALE) {
+            femaleButton.setSelected(true);
+        } else if (thePerson.getGender() == Person.Gender.UNKNOW) {
+            unknowButton.setSelected(true);
+        }
+        noteTextArea.setText(thePerson.getNotes());
+        updateButton.setEnabled(true);
+
+    }
+
 }
