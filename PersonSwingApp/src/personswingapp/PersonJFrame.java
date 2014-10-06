@@ -17,6 +17,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -33,6 +35,7 @@ public class PersonJFrame extends javax.swing.JFrame {
     private final FamilyTreeManager ftm = FamilyTreeManager.getInstance();
     private Person thePerson;
     private static final Logger logger = Logger.getLogger(PersonJFrame.class.getName());
+    private boolean changeOk = false;
 
     /**
      * Creates new form PersonJFrame
@@ -48,7 +51,7 @@ public class PersonJFrame extends javax.swing.JFrame {
             Handler fileHandler = new FileHandler();
             fileHandler.setLevel(Level.FINE);
             logger.addHandler(fileHandler);
-            logger.log(Level.FINE, "Cretaed File Handler");
+            logger.log(Level.FINE, "Created File Handler");
         } catch (IOException | SecurityException ex) {
             logger.log(Level.SEVERE, "Couldn't create FileHandler", ex);
         }
@@ -63,6 +66,13 @@ public class PersonJFrame extends javax.swing.JFrame {
         ftm.addPropertyChangeListener(familyTreeListener);
         personTree.addTreeSelectionListener(treeSelectionListener);
         updateButton.addActionListener(updateListener);
+        firstTextField.getDocument().addDocumentListener(docListener);
+        middleTextField.getDocument().addDocumentListener(docListener);
+        lastTextField.getDocument().addDocumentListener(docListener);
+        notesTextArea.getDocument().addDocumentListener(docListener);
+        maleButton.addActionListener(radioButtonListener);
+        femaleButton.addActionListener(radioButtonListener);
+        unknowButton.addActionListener(radioButtonListener);
     }
 
     public static PersonJFrame newInstance() {
@@ -80,10 +90,10 @@ public class PersonJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        genderButtonGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        noteTextArea = new javax.swing.JTextArea();
+        notesTextArea = new javax.swing.JTextArea();
         maleButton = new javax.swing.JRadioButton();
         suffixTextField = new javax.swing.JTextField();
         femaleButton = new javax.swing.JRadioButton();
@@ -101,11 +111,11 @@ public class PersonJFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        noteTextArea.setColumns(20);
-        noteTextArea.setRows(5);
-        jScrollPane2.setViewportView(noteTextArea);
+        notesTextArea.setColumns(20);
+        notesTextArea.setRows(5);
+        jScrollPane2.setViewportView(notesTextArea);
 
-        buttonGroup1.add(maleButton);
+        genderButtonGroup.add(maleButton);
         maleButton.setText("Male");
         maleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -119,10 +129,10 @@ public class PersonJFrame extends javax.swing.JFrame {
             }
         });
 
-        buttonGroup1.add(femaleButton);
+        genderButtonGroup.add(femaleButton);
         femaleButton.setText("Female");
 
-        buttonGroup1.add(unknowButton);
+        genderButtonGroup.add(unknowButton);
         unknowButton.setText("Unknow");
 
         jLabel1.setText("First:");
@@ -215,8 +225,8 @@ public class PersonJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -281,9 +291,9 @@ public class PersonJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JRadioButton femaleButton;
     private javax.swing.JTextField firstTextField;
+    private javax.swing.ButtonGroup genderButtonGroup;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -294,7 +304,7 @@ public class PersonJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField lastTextField;
     private javax.swing.JRadioButton maleButton;
     private javax.swing.JTextField middleTextField;
-    private javax.swing.JTextArea noteTextArea;
+    private javax.swing.JTextArea notesTextArea;
     private javax.swing.JTree personTree;
     private javax.swing.JTextField suffixTextField;
     private javax.swing.JRadioButton unknowButton;
@@ -316,6 +326,10 @@ public class PersonJFrame extends javax.swing.JFrame {
     }
 
     private void updateModel() {
+        if (!changeOk) {
+            return;
+        }
+        updateButton.setEnabled(false);
         thePerson.setFirstname(firstTextField.getText());
         thePerson.setMiddlename(middleTextField.getText());
         thePerson.setLastname(lastTextField.getText());
@@ -327,14 +341,46 @@ public class PersonJFrame extends javax.swing.JFrame {
         } else if (unknowButton.isSelected()) {
             thePerson.setGender(Person.Gender.UNKNOW);
         }
-        thePerson.setNotes(noteTextArea.getText());
+        thePerson.setNotes(notesTextArea.getText());
     }
-    
+
     /* define listener */
     private final ActionListener updateListener = (ActionEvent evt) -> {
         updateModel();
     };
-    
+
+    /* document listener for text fields and text area */
+    private DocumentListener docListener = new DocumentListener() {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            if (changeOk) {
+                modify();
+            }
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            if (changeOk) {
+                modify();
+            }
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            if (changeOk) {
+                modify();
+            }
+        }
+    };
+
+    /* action listener for radio buttons */
+    private final ActionListener radioButtonListener = (ActionEvent evt) -> {
+        if (changeOk) {
+            modify();
+        }
+    };
+
     private final PropertyChangeListener familyTreeListener = (PropertyChangeEvent evt) -> {
         if (evt.getNewValue() != null && evt.getPropertyName().equals(FamilyTreeManager.PROP_PERSON_UPDATED)) {
             Person person = (Person) evt.getNewValue();
@@ -363,6 +409,7 @@ public class PersonJFrame extends javax.swing.JFrame {
             logger.log(Level.FINE, "{0} selected", person);
             editPerson(person);
         } else {
+            clearForm();
             updateButton.setEnabled(false);
         }
     };
@@ -373,6 +420,8 @@ public class PersonJFrame extends javax.swing.JFrame {
     }
 
     private void updateForm() {
+        changeOk = false;
+        updateButton.setEnabled(false);
         firstTextField.setText(thePerson.getFirstname());
         middleTextField.setText(thePerson.getMiddlename());
         lastTextField.setText(thePerson.getLastname());
@@ -384,9 +433,26 @@ public class PersonJFrame extends javax.swing.JFrame {
         } else if (thePerson.getGender() == Person.Gender.UNKNOW) {
             unknowButton.setSelected(true);
         }
-        noteTextArea.setText(thePerson.getNotes());
-        updateButton.setEnabled(true);
+        notesTextArea.setText(thePerson.getNotes());
+//        updateButton.setEnabled(true);
+        changeOk = true;
 
     }
 
+    private void clearForm() {
+        updateButton.setEnabled(false);
+        changeOk = false;
+        firstTextField.setText("");
+        middleTextField.setText("");
+        lastTextField.setText("");
+        maleButton.setSelected(false);
+        femaleButton.setSelected(false);
+        unknowButton.setSelected(false);
+        genderButtonGroup.clearSelection();
+        notesTextArea.setText("");
+    }
+
+    private void modify() {
+        updateButton.setEnabled(true);
+    }
 }
