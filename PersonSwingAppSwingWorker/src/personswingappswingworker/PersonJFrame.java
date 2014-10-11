@@ -55,7 +55,7 @@ public class PersonJFrame extends javax.swing.JFrame {
             Handler fileHandler = new FileHandler();
             fileHandler.setLevel(Level.FINE);
             logger.addHandler(fileHandler);
-            logger.log(Level.FINE, "Created File Handler {0}", fileHandler.);
+            logger.log(Level.FINE, "Created File Handler");
         } catch (IOException | SecurityException ex) {
             logger.log(Level.SEVERE, "Couldn't create FileHandler", ex);
         }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+
+<!--<AnchorPane id="AnchorPane" prefHeight="200" prefWidth="320" xmlns:fx="http://javafx.com/fxml/1" fx:controller="myrectanglefxapp.MyRectangleFXController">
+    <children>
+        <Button layoutX="126" layoutY="90" text="Click Me!" onAction="#handleButtonAction" fx:id="button" />
+        <Label layoutX="126" layoutY="120" minHeight="16" minWidth="69" fx:id="label" />
+    </children>
+</AnchorPane>-->
+<StackPane xmlns:fx="http://javafx.com/fxml/1" id="StackPane" fx:id="stackpane" prefHeight="200" prefWidth="400"  fx:controller="myrectanglefxapp.MyRectangleFXController">
+    <stylesheets>
+        <URL value="@MyCSS.css"/>
+    </stylesheets>
+    <children>
+        <!--<javafx.scene.shape.Rectangle fx:id="myrectangle" width="200" height="100" arcWidth="30" arcHeight="30" style="-fx-fill: linear-gradient(#ffd65b, #e68400) linear-gradient(#ffef84, #f2ba44) linear-gradient(#ffea6a, #efaa22) linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%) linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0))" >-->
+        <javafx.scene.shape.Rectangle id = "myrectangle" fx:id="rectangle" width="200" height="100" arcWidth="30" arcHeight="30" onMouseClicked="#handleMouseClick"  >
+<!--            <effect>
+                <javafx.scene.effect.DropShadow color="GRAY" offsetX="5.0" offsetY="5.0"/>   
+            </effect>    -->
+        </javafx.scene.shape.Rectangle> 
+        <Text text="My Rectangle">
+            <effect>
+                <Reflection/>
+            </effect>
+            <font>
+                <Font name="Verdana Bold" size="18.0"/>
+            </font>
+        </Text>
+    </children>
+</StackPane>
