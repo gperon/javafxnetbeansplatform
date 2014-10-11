@@ -14,9 +14,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  *
@@ -24,8 +25,8 @@ import java.util.Map;
  */
 public class FamilyTreeManager {
 
-    private final Map<Long, Person> personMap = new HashMap<>();
-    private PropertyChangeSupport pcs = null;
+    private final ConcurrentMap<Long, Person> personMap = new ConcurrentHashMap<>();
+    private SwingPropertyChangeSupport pcs = null;
     private static FamilyTreeManager instance = null;
 
     protected FamilyTreeManager() {
@@ -39,11 +40,10 @@ public class FamilyTreeManager {
      *
      * @return
      */
-    public static FamilyTreeManager getInstance() {
+    public synchronized static FamilyTreeManager getInstance() {
         if (null == instance) {
-            /* thread safe */
             instance = new FamilyTreeManager();
-            instance.pcs = new PropertyChangeSupport(instance);
+            instance.pcs = new SwingPropertyChangeSupport(instance);
         }
 
         return instance;
@@ -80,8 +80,11 @@ public class FamilyTreeManager {
      * @param p
      */
     public void addPerson(Person p) {
-        Person person = new Person(p);
-        personMap.put(person.getId(), person);
+        Person person;
+        synchronized (this) {
+            person = new Person(p);
+            personMap.put(person.getId(), person);
+        }
         pcs.firePropertyChange(PROP_PERSON_ADDED, null, person);
     }
 
@@ -92,8 +95,11 @@ public class FamilyTreeManager {
      * @param p
      */
     public void updatePerson(Person p) {
-        Person person = new Person(p);
-        personMap.put(person.getId(), person);
+        Person person;
+        synchronized (this) {
+            person = new Person(p);
+            personMap.put(person.getId(), person);
+        }
         pcs.firePropertyChange(PROP_PERSON_UPDATED, null, person);
     }
 
@@ -104,9 +110,12 @@ public class FamilyTreeManager {
      * @param p
      */
     public void deletePerson(Person p) {
-        Person person = personMap.remove(p.getId());
-        if (person != null) {
-            pcs.firePropertyChange(PROP_PERSON_DESTROYED, null, person);
+        Person person;
+        synchronized (this) {
+            person = personMap.remove(p.getId());
+            if (person != null) {
+                pcs.firePropertyChange(PROP_PERSON_DESTROYED, null, person);
+            }
         }
     }
 
@@ -116,7 +125,7 @@ public class FamilyTreeManager {
      *
      * @return
      */
-    public List<Person> getAllPeople() {
+    public synchronized List<Person> getAllPeople() {
         List<Person> copyList = new ArrayList<>();
 //        for (Person person : personMap.values()) {
 //            copyList.add(new Person(person));

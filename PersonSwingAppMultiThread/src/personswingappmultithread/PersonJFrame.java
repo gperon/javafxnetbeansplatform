@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package personswingapp;
+package personswingappmultithread;
 
 import com.asgteach.familytree.model.FamilyTreeManager;
 import com.asgteach.familytree.model.Person;
@@ -17,6 +17,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -78,9 +79,7 @@ public class PersonJFrame extends javax.swing.JFrame {
     }
 
     public static PersonJFrame newInstance() {
-        /* call the costructor */
         PersonJFrame pjf = new PersonJFrame();
-        /* safety configure listener */
         pjf.configureListeners();
         return pjf;
     }
@@ -110,6 +109,8 @@ public class PersonJFrame extends javax.swing.JFrame {
         lastTextField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         updateButton = new javax.swing.JButton();
+        updateButton.setEnabled(false);
+        jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         personTree = new javax.swing.JTree(top);
 
@@ -117,6 +118,7 @@ public class PersonJFrame extends javax.swing.JFrame {
 
         notesTextArea.setColumns(20);
         notesTextArea.setRows(5);
+        notesTextArea.setName(""); // NOI18N
         jScrollPane2.setViewportView(notesTextArea);
 
         genderButtonGroup.add(maleButton);
@@ -160,6 +162,8 @@ public class PersonJFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setText("Notes:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -168,15 +172,14 @@ public class PersonJFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(updateButton)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(maleButton)
@@ -188,7 +191,10 @@ public class PersonJFrame extends javax.swing.JFrame {
                             .addComponent(middleTextField)
                             .addComponent(suffixTextField)
                             .addComponent(lastTextField, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(firstTextField, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(firstTextField, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(updateButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -209,16 +215,21 @@ public class PersonJFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(suffixTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(maleButton)
-                    .addComponent(femaleButton)
-                    .addComponent(unknowButton))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(maleButton)
+                            .addComponent(femaleButton)
+                            .addComponent(unknowButton)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(jLabel5)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(updateButton)
-                .addGap(0, 82, Short.MAX_VALUE))
+                .addGap(0, 10, Short.MAX_VALUE))
         );
 
         jScrollPane1.setViewportView(personTree);
@@ -228,8 +239,8 @@ public class PersonJFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -238,10 +249,10 @@ public class PersonJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -302,6 +313,7 @@ public class PersonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -350,7 +362,41 @@ public class PersonJFrame extends javax.swing.JFrame {
 
     /* define listener */
     private final ActionListener updateListener = (ActionEvent evt) -> {
+        /* first update the model from the UI */
         updateModel();
+        /* copy Person for background thread */
+        final Person person = new Person(thePerson);
+        SwingWorker<Person, Void> worker = new SwingWorker<Person, Void>() {
+
+            @Override
+            protected Person doInBackground() throws Exception {
+                /* simulate a long running process*/
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, null, e);
+                }
+                /* save in background thread */
+                logger.log(Level.FINE, "calling ftm for person {0}", person);
+                ftm.updatePerson(person);
+                /* only if interested in accessing person after background thread finishes otherwise return null */
+                return person;
+            }
+
+            @Override
+            protected void done() {
+                /* invoked after background thread finishes */
+                try {
+                    if (!isCancelled()) {
+                        logger.log(Level.FINE, "Done! Saving person {0}", get());
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, null, e);
+                }
+            }
+        };
+        /* invoke background thread */
+        worker.execute();
     };
 
     /* document listener for text fields and text area */

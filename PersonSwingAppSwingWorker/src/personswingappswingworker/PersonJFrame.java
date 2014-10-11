@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package personswingapp;
+package personswingappswingworker;
 
 import com.asgteach.familytree.model.FamilyTreeManager;
 import com.asgteach.familytree.model.Person;
@@ -12,11 +12,15 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -51,7 +55,7 @@ public class PersonJFrame extends javax.swing.JFrame {
             Handler fileHandler = new FileHandler();
             fileHandler.setLevel(Level.FINE);
             logger.addHandler(fileHandler);
-            logger.log(Level.FINE, "Created File Handler");
+            logger.log(Level.FINE, "Created File Handler {0}", fileHandler.);
         } catch (IOException | SecurityException ex) {
             logger.log(Level.SEVERE, "Couldn't create FileHandler", ex);
         }
@@ -75,12 +79,11 @@ public class PersonJFrame extends javax.swing.JFrame {
         maleButton.addActionListener(radioButtonListener);
         femaleButton.addActionListener(radioButtonListener);
         unknowButton.addActionListener(radioButtonListener);
+        processAllButton.addActionListener(processAllListener);
     }
 
     public static PersonJFrame newInstance() {
-        /* call the costructor */
         PersonJFrame pjf = new PersonJFrame();
-        /* safety configure listener */
         pjf.configureListeners();
         return pjf;
     }
@@ -95,6 +98,11 @@ public class PersonJFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         genderButtonGroup = new javax.swing.ButtonGroup();
+        jPanel2 = new javax.swing.JPanel();
+        processAllButton = new javax.swing.JButton();
+        progressBar = new javax.swing.JProgressBar();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        statusTextArea = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         notesTextArea = new javax.swing.JTextArea();
@@ -110,13 +118,47 @@ public class PersonJFrame extends javax.swing.JFrame {
         lastTextField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         updateButton = new javax.swing.JButton();
+        updateButton.setEnabled(false);
+        jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         personTree = new javax.swing.JTree(top);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        processAllButton.setText("Process All");
+        processAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                processAllButtonActionPerformed(evt);
+            }
+        });
+
+        statusTextArea.setColumns(20);
+        statusTextArea.setRows(5);
+        jScrollPane3.setViewportView(statusTextArea);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(processAllButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane3)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(processAllButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3))
+        );
+
         notesTextArea.setColumns(20);
         notesTextArea.setRows(5);
+        notesTextArea.setName(""); // NOI18N
         jScrollPane2.setViewportView(notesTextArea);
 
         genderButtonGroup.add(maleButton);
@@ -160,6 +202,8 @@ public class PersonJFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setText("Notes:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -168,15 +212,14 @@ public class PersonJFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(updateButton)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(maleButton)
@@ -188,7 +231,10 @@ public class PersonJFrame extends javax.swing.JFrame {
                             .addComponent(middleTextField)
                             .addComponent(suffixTextField)
                             .addComponent(lastTextField, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(firstTextField, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(firstTextField, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(updateButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -209,16 +255,21 @@ public class PersonJFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(suffixTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(maleButton)
-                    .addComponent(femaleButton)
-                    .addComponent(unknowButton))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(maleButton)
+                            .addComponent(femaleButton)
+                            .addComponent(unknowButton)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(jLabel5)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(updateButton)
-                .addGap(0, 82, Short.MAX_VALUE))
+                .addGap(0, 10, Short.MAX_VALUE))
         );
 
         jScrollPane1.setViewportView(personTree);
@@ -228,8 +279,10 @@ public class PersonJFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -238,10 +291,13 @@ public class PersonJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -262,6 +318,10 @@ public class PersonJFrame extends javax.swing.JFrame {
     private void suffixTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_suffixTextFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_suffixTextFieldActionPerformed
+
+    private void processAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_processAllButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_processAllButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -302,14 +362,20 @@ public class PersonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField lastTextField;
     private javax.swing.JRadioButton maleButton;
     private javax.swing.JTextField middleTextField;
     private javax.swing.JTextArea notesTextArea;
     private javax.swing.JTree personTree;
+    private javax.swing.JButton processAllButton;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JTextArea statusTextArea;
     private javax.swing.JTextField suffixTextField;
     private javax.swing.JRadioButton unknowButton;
     private javax.swing.JButton updateButton;
@@ -348,9 +414,112 @@ public class PersonJFrame extends javax.swing.JFrame {
         thePerson.setNotes(notesTextArea.getText());
     }
 
+    private final ActionListener processAllListener = (ActionEvent evt) -> {
+        /* get list of people from ftm */
+        final Collection<Person> processList = ftm.getAllPeople();
+        processAllButton.setEnabled(false);
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        logger.log(Level.FINE, "Process all requested for {0}", processList);
+        SwingWorker<Collection<Person>, Person> worker = new SwingWorker<Collection<Person>, Person>() {
+            final int count = processList.size();
+
+            @Override
+            protected Collection<Person> doInBackground() throws Exception {
+                int i = 0;
+                for (Person person : processList) {
+                    try {
+                        /* do something with each person */
+                        doProcess(person);
+                        logger.log(Level.FINE, "Processing person {0}...", person);
+                        /* make available to process() */
+                        publish(person);
+                        setProgress(100 * (++i) / count);
+                        /* simulate a long-runnign task */
+                        Thread.sleep(500);
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, null, e);
+                    }
+                }
+                return processList;
+            }
+
+            private void doProcess(Person p) {
+                p.setFirstname(p.getFirstname().toUpperCase());
+                p.setMiddlename(p.getMiddlename().toUpperCase());
+                p.setLastname(p.getLastname().toUpperCase());
+                p.setSuffix(p.getSuffix().toUpperCase());
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    if (!isCancelled()) {
+                        logger.log(Level.FINE, "Done! Processing all {0}", get());
+                    }
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(PersonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                /* reset any GUI elements */
+                progressBar.setValue(0);
+                progressBar.setStringPainted(false);
+                statusTextArea.setText("");
+                processAllButton.setEnabled(true);
+            }
+
+            @Override
+            protected void process(List<Person> chunks) {
+                chunks.stream().forEach((p) -> {
+                    statusTextArea.append(p + "\n");
+                });
+            }
+
+        };
+        worker.addPropertyChangeListener((PropertyChangeEvent pce) -> {
+            if ("progress".equals(pce.getPropertyName())) {
+                progressBar.setValue((int) pce.getNewValue());
+            }
+        });
+        worker.execute();
+    };
+
     /* define listener */
     private final ActionListener updateListener = (ActionEvent evt) -> {
+        /* first update the model from the UI */
         updateModel();
+        /* copy Person for background thread */
+        final Person person = new Person(thePerson);
+        SwingWorker<Person, Void> worker = new SwingWorker<Person, Void>() {
+
+            @Override
+            protected Person doInBackground() throws Exception {
+                /* simulate a long running process*/
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, null, e);
+                }
+                /* save in background thread */
+                logger.log(Level.FINE, "calling ftm for person {0}", person);
+                ftm.updatePerson(person);
+                /* only if interested in accessing person after background thread finishes otherwise return null */
+                return person;
+            }
+
+            @Override
+            protected void done() {
+                /* invoked after background thread finishes */
+                try {
+                    if (!isCancelled()) {
+                        logger.log(Level.FINE, "Done! Saving person {0}", get());
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, null, e);
+                }
+            }
+        };
+        /* invoke background thread */
+        worker.execute();
     };
 
     /* document listener for text fields and text area */
