@@ -1,7 +1,6 @@
 build
-/PersonSwingAppMultiThread/nbproject/private/
-/PersonSwingAppSwingWorker/nbproject/private/
-/MyRectangleApp/nbproject/private/
-/MyRectangleApp/dist/
-/MyRectangleFXApp/nbproject/private/
-/MyRectangleFXApp/dist/
+**/private/
+**/dist/
+BookExamples
+.directory
+/ch03_javafxbasics/MyBind/nbproject/private/
