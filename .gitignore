@@ -1,6 +1,7 @@
-build
+**/build/
+**/target/
 **/private/
 **/dist/
 BookExamples
 .directory
-/ch03_javafxbasics/MyBind/nbproject/private/
+.projectKnowledge

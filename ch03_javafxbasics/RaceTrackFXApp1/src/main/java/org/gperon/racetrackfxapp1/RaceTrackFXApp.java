@@ -25,7 +25,7 @@
 
 
 
-package racetrackfxapp;
+package org.gperon.racetrackfxapp1;
 
 import javafx.application.Application;
 

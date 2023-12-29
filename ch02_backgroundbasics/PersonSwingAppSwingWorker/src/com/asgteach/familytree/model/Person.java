@@ -1,21 +1,30 @@
 /*
- * @(#)Person.java   2014-10-02
- * 
- * Copyright (c) 2005-2014 Luxottica Group
- * All Rights Reserved.
- * This program contains proprietary and trade secret information of Luxottica Group.
+ * @(#)Person.java   2023-12-29
  *
+ * Copyright 2024 Giorgio Peron <giorgio.peron@gmail.com>, Belluno, Italy
+ * All rights reserved.
  *
+ * Redistribution and use of this script, with or without modification, is
+ * permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of this script must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR IMPLIED
+ *  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+ *  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
 
 
-/*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
- */
 package com.asgteach.familytree.model;
 
 import java.beans.PropertyChangeListener;
@@ -28,44 +37,46 @@ import java.io.Serializable;
  * @author GiorgioP
  */
 public class Person implements Serializable {
-    private long id;
-
-    /**
-     * Get the value of id
-     *
-     * @return the value of id
-     */
-    public long getId() {
-        return id;
-    }
-
-    private String firstname;
-
-    /** Field description */
     public static final String PROP_FIRSTNAME = "firstname";
-
-    /**
-     * Get the value of firstname
-     *
-     * @return the value of firstname
-     */
-    public String getFirstname() {
-        return firstname;
-    }
-
-    /**
-     * Set the value of firstname
-     *
-     * @param firstname new value of firstname
-     */
-    public void setFirstname(String firstname) {
-        String oldFirstname = this.firstname;
-        this.firstname = firstname;
-        propertyChangeSupport.firePropertyChange(PROP_FIRSTNAME, oldFirstname, firstname);
-    }
-
+    public static final String PROP_MIDDLENAME = "middlename";
+    public static final String PROP_LASTNAME = "lastname";
+    public static final String PROP_SUFFIX = "suffix";
+    public static final String PROP_NOTES = "notes";
+    private static long count = 0;
     private transient final PropertyChangeSupport propertyChangeSupport =
         new PropertyChangeSupport(this);
+    private long id;
+    private String firstname;
+    private String middlename;
+    private String lastname;
+    private String suffix;
+    private String notes;
+    private Gender gender;
+
+    public enum Gender { MALE, FEMALE, UNKNOW; }
+
+    public Person() {
+        this("", "", Gender.UNKNOW);
+    }
+
+    public Person(Person person) {
+        firstname = person.getFirstname();
+        middlename = person.getMiddlename();
+        lastname = person.getLastname();
+        suffix = person.getSuffix();
+        gender = person.getGender();
+        notes = person.getNotes();
+        id = person.getId();
+    }
+
+    public Person(String firstname, String lastname, Gender gender) {
+        middlename = "";
+        suffix = "";
+        id = count++;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.gender = gender;
+    }
 
     /**
      * Add PropertyChangeListener.
@@ -85,177 +96,6 @@ public class Person implements Serializable {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    private String middlename;
-
-    /** Field description */
-    public static final String PROP_MIDDLENAME = "middlename";
-
-    /**
-     * Get the value of middlename
-     *
-     * @return the value of middlename
-     */
-    public String getMiddlename() {
-        return middlename;
-    }
-
-    /**
-     * Set the value of middlename
-     *
-     * @param middlename new value of middlename
-     */
-    public void setMiddlename(String middlename) {
-        String oldMiddlename = this.middlename;
-        this.middlename = middlename;
-        propertyChangeSupport.firePropertyChange(PROP_MIDDLENAME, oldMiddlename, middlename);
-    }
-
-    private String lastname;
-
-    /** Field description */
-    public static final String PROP_LASTNAME = "lastname";
-
-    /**
-     * Get the value of lastname
-     *
-     * @return the value of lastname
-     */
-    public String getLastname() {
-        return lastname;
-    }
-
-    /**
-     * Set the value of lastname
-     *
-     * @param lastname new value of lastname
-     */
-    public void setLastname(String lastname) {
-        String oldLastname = this.lastname;
-        this.lastname = lastname;
-        propertyChangeSupport.firePropertyChange(PROP_LASTNAME, oldLastname, lastname);
-    }
-
-    private String suffix;
-
-    /** Field description */
-    public static final String PROP_SUFFIX = "suffix";
-
-    /**
-     * Get the value of suffix
-     *
-     * @return the value of suffix
-     */
-    public String getSuffix() {
-        return suffix;
-    }
-
-    /**
-     * Set the value of suffix
-     *
-     * @param suffix new value of suffix
-     */
-    public void setSuffix(String suffix) {
-        String oldSuffix = this.suffix;
-        this.suffix = suffix;
-        propertyChangeSupport.firePropertyChange(PROP_SUFFIX, oldSuffix, suffix);
-    }
-
-    private String notes;
-
-    /** Field description */
-    public static final String PROP_NOTES = "notes";
-
-    /**
-     * Get the value of notes
-     *
-     * @return the value of notes
-     */
-    public String getNotes() {
-        return notes;
-    }
-
-    /**
-     * Set the value of notes
-     *
-     * @param notes new value of notes
-     */
-    public void setNotes(String notes) {
-        String oldNotes = this.notes;
-        this.notes = notes;
-        propertyChangeSupport.firePropertyChange(PROP_NOTES, oldNotes, notes);
-    }
-
-    private Gender gender;
-
-    /**
-     * Method description
-     *
-     *
-     * @return
-     */
-    public Gender getGender() {
-        return gender;
-    }
-    
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    private static long count = 0;
-
-    /**
-     * Enum description
-     *
-     */
-    public enum Gender { MALE, FEMALE, UNKNOW; }
-
-    /**
-     * Constructs ...
-     *
-     *
-     * @param firstname
-     * @param lastname
-     * @param gender
-     */
-    public Person(String firstname, String lastname, Gender gender) {
-        middlename = "";
-        suffix = "";
-        id = count++;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.gender = gender;
-    }
-
-    /**
-     * Constructs ...
-     *
-     */
-    public Person() {
-        this("", "", Gender.UNKNOW);
-    }
-
-    /**
-     * Constructs ...
-     *
-     *
-     * @param person
-     */
-    public Person(Person person) {
-        firstname = person.getFirstname();
-        middlename = person.getMiddlename();
-        lastname = person.getLastname();
-        suffix = person.getSuffix();
-        gender = person.getGender();
-        notes = person.getNotes();
-        id = person.getId();
-    }
-
-    /**
-     * Method description
-     *
-     *
-     * @return
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -275,12 +115,6 @@ public class Person implements Serializable {
         return sb.toString();
     }
 
-    /**
-     * Method description
-     *
-     *
-     * @return
-     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -289,14 +123,6 @@ public class Person implements Serializable {
         return hash;
     }
 
-    /**
-     * Method description
-     *
-     *
-     * @param obj
-     *
-     * @return
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -311,5 +137,122 @@ public class Person implements Serializable {
         }
 
         return true;
+    }
+
+    /**
+     * Get the value of id
+     *
+     * @return the value of id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Get the value of firstname
+     *
+     * @return the value of firstname
+     */
+    public String getFirstname() {
+        return firstname;
+    }
+
+    /**
+     * Get the value of middlename
+     *
+     * @return the value of middlename
+     */
+    public String getMiddlename() {
+        return middlename;
+    }
+
+    /**
+     * Get the value of lastname
+     *
+     * @return the value of lastname
+     */
+    public String getLastname() {
+        return lastname;
+    }
+
+    /**
+     * Get the value of suffix
+     *
+     * @return the value of suffix
+     */
+    public String getSuffix() {
+        return suffix;
+    }
+
+    /**
+     * Get the value of notes
+     *
+     * @return the value of notes
+     */
+    public String getNotes() {
+        return notes;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    /**
+     * Set the value of firstname
+     *
+     * @param firstname new value of firstname
+     */
+    public void setFirstname(String firstname) {
+        String oldFirstname = this.firstname;
+        this.firstname = firstname;
+        propertyChangeSupport.firePropertyChange(PROP_FIRSTNAME, oldFirstname, firstname);
+    }
+
+    /**
+     * Set the value of middlename
+     *
+     * @param middlename new value of middlename
+     */
+    public void setMiddlename(String middlename) {
+        String oldMiddlename = this.middlename;
+        this.middlename = middlename;
+        propertyChangeSupport.firePropertyChange(PROP_MIDDLENAME, oldMiddlename, middlename);
+    }
+
+    /**
+     * Set the value of lastname
+     *
+     * @param lastname new value of lastname
+     */
+    public void setLastname(String lastname) {
+        String oldLastname = this.lastname;
+        this.lastname = lastname;
+        propertyChangeSupport.firePropertyChange(PROP_LASTNAME, oldLastname, lastname);
+    }
+
+    /**
+     * Set the value of suffix
+     *
+     * @param suffix new value of suffix
+     */
+    public void setSuffix(String suffix) {
+        String oldSuffix = this.suffix;
+        this.suffix = suffix;
+        propertyChangeSupport.firePropertyChange(PROP_SUFFIX, oldSuffix, suffix);
+    }
+
+    /**
+     * Set the value of notes
+     *
+     * @param notes new value of notes
+     */
+    public void setNotes(String notes) {
+        String oldNotes = this.notes;
+        this.notes = notes;
+        propertyChangeSupport.firePropertyChange(PROP_NOTES, oldNotes, notes);
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }

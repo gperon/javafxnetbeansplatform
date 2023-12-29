@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.shape.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="VBox" prefHeight="300" prefWidth="400" spacing="20" alignment="CENTER" style="-fx-background-color: lightblue"  fx:controller="org.gperon.racetrackfxapp1.RaceTrackController">
+    <children>
+        <StackPane >
+            <children>
+                <Group >
+                    <children>
+                        <Path fx:id="path" stroke="DARKGOLDENROD" strokeWidth="15" fill="orange">
+                            <effect>
+                                <DropShadow fx:id="dropshadow" radius="10" offsetX="5" offsetY="5" color="GRAY"/>    
+                            </effect>
+                            
+                            <elements>
+                                <MoveTo x="0" y="0"/>
+                                <ArcTo radiusX="100" radiusY="50" sweepFlag="true" x="270" y="0"/>
+                                <LineTo x="270" y="50"/> 
+                                <ArcTo radiusX="100" radiusY="50" sweepFlag="true" x="0" y="50"/>
+                                <ClosePath />
+                            </elements>
+                        </Path>
+                        <Line startX="-25" startY="0" endX="10" endY="0" strokeWidth="4" stroke="BLUE" strokeLineCap="ROUND" effect="$dropshadow" />         
+                        <Rectangle fx:id="rectangle" x="-15" y="0" width="35" height="20" fill="YELLOW" arcWidth="10" arcHeight="10" stroke="BLACK" rotate="90"/>       
+                    </children>
+                </Group>
+                <Text fx:id="text">
+                    <font>
+                        <Font name="Verdana" size="16"/>
+                    </font>
+                    <effect>
+                        <Reflection/>
+                    </effect>
+                </Text>
+            </children>
+        </StackPane>        
+        <HBox spacing="20" alignment="CENTER">
+            <Button fx:id="slowerButton" onAction="#slowerAction" />  
+            <Button fx:id="startPauseButton" prefWidth = "80" onAction="#startPauseAction" />  
+            <Button fx:id="fasterButton"  onAction="#fasterAction" />  
+        </HBox>  
+    </children>
+</VBox>
