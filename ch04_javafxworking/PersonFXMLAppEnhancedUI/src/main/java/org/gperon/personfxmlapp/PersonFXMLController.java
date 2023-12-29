@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.gperon.personfxmlappenhancedui;
+package org.gperon.personfxmlapp;
 
 import org.gperon.familytree.model.FamilyTreeManager;
 import org.gperon.familytree.model.Person;

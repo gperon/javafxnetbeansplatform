@@ -3,6 +3,6 @@ module org.gperon.personfxmlappenhancedui {
     requires javafx.fxml;
     requires java.logging;
 
-    opens org.gperon.personfxmlappenhancedui to javafx.fxml;
-    exports org.gperon.personfxmlappenhancedui;
+    opens org.gperon.personfxmlapp to javafx.fxml;
+    exports org.gperon.personfxmlapp;
 }

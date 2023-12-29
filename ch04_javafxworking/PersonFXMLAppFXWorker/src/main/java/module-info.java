@@ -1,4 +1,4 @@
-module org.gperon.personfxmlappmultithread {
+module org.gperon.personfxmlapp {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.logging;

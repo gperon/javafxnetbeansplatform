@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.gperon.personfxmlappmultithread;
+package org.gperon.personfxmlapp;
 
 import org.gperon.familytree.model.FamilyTreeManager;
 import org.gperon.familytree.model.Person;
@@ -21,12 +21,16 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
@@ -63,6 +67,14 @@ public class PersonFXMLController implements Initializable {
     private Button updateButton;
     @FXML
     private ProgressIndicator updateProgressIndicator;
+    @FXML
+    private ProgressBar progressBar;
+    @FXML
+    private Button processAllButton;
+    @FXML
+    private TextArea statusTextArea;
+    @FXML
+    private Label statusMessage;
     private static final Logger logger = Logger.getLogger(PersonFXMLController.class.getName());
     private final FamilyTreeManager ftm = FamilyTreeManager.getInstance();
     private Person thePerson = null;
@@ -81,19 +93,19 @@ public class PersonFXMLController implements Initializable {
         Task<Person> updateTask = new Task<Person>() {
             @Override
             protected Person call() throws Exception {
-                Thread.sleep(3000);
+                Thread.sleep(500);
                 ftm.updatePerson(person);
                 return person;
             }
         };
-        updateTask.setOnSucceeded((t) -> {
+        updateTask.setOnSucceeded(t -> {
             backgroundActive.set(backgroundActive.get() - 1);
             logger.log(Level.FINE, "Update task finished: {0}",
                     t.getSource().getValue());
             logger.log(Level.FINE, "tasks stillInBackground = {0}",
                     backgroundActive.get());
         });
-        updateTask.setOnFailed((t) -> {
+        updateTask.setOnFailed(t -> {
             backgroundActive.set(backgroundActive.get() - 1);
             // t.getSource().getException() could be null
             logger.log(Level.WARNING, "Update task failed {0}",
@@ -104,6 +116,52 @@ public class PersonFXMLController implements Initializable {
                     backgroundActive.get());
         });
         new Thread(updateTask).start();
+    }
+
+    @FXML
+    private void processAllButtonAction(ActionEvent event) {
+        logger.log(Level.FINE, "Process All Button");
+        // only one task to run at a time so disable the button
+        processAllButton.setDisable(true);
+        // create the task with a list
+        final ProcessAllTask processTask = new ProcessAllTask(
+                FXCollections.observableArrayList(ftm.getAllPeople()));
+        // configure the UI       
+        progressBar.progressProperty().bind(processTask.progressProperty());
+        statusMessage.textProperty().bind(processTask.messageProperty());
+        statusTextArea.textProperty().bind(processTask.valueProperty());
+
+        // set up handlers for success and failure
+        processTask.setOnSucceeded(t -> {
+            logger.log(Level.FINE, "Process All task finished: {0}",
+                    t.getSource().getValue());
+            resetUI();
+        });
+        processTask.setOnFailed(t -> {
+            // t.getSource().getException() could be null
+            logger.log(Level.WARNING, "Update task failed {0}",
+                    t.getSource().getException() != null
+                    ? t.getSource().getException()
+                    : "Unknown failure");
+            resetUI();
+        });
+        processTask.setOnCancelled(t -> {
+            logger.log(Level.FINE, "Process All task cancelled.");
+            resetUI();
+        });
+        // start the task in a background thread
+        new Thread(processTask).start();
+    }
+
+    // reset the UI
+    private void resetUI() {
+        statusTextArea.textProperty().unbind();
+        statusTextArea.setText("");
+        progressBar.progressProperty().unbind();
+        progressBar.setProgress(0);
+        statusMessage.textProperty().unbind();
+        statusMessage.setText("");
+        processAllButton.setDisable(false);
     }
 
     @FXML
@@ -152,7 +210,7 @@ public class PersonFXMLController implements Initializable {
         // listen for changes to the familytreemanager's map
         ftm.addListener(familyTreeListener);
         // Populate the TreeView control
-        ftm.getAllPeople().stream().forEach((p) -> {
+        ftm.getAllPeople().stream().forEach(p -> {
             root.getChildren().add(new TreeItem<>(p));
         });
     }
@@ -205,7 +263,7 @@ public class PersonFXMLController implements Initializable {
         personTreeView.getRoot().setExpanded(true);
         personTreeView.getSelectionModel().selectedItemProperty().addListener(treeSelectionListener);
     }
-    
+
     // MapChangeListener when underlying FamilyTreeManager changes
     // Check to see if on FXT, if not call Platform.runLater()
     private final MapChangeListener<Long, Person> familyTreeListener = change -> {
@@ -233,8 +291,7 @@ public class PersonFXMLController implements Initializable {
     }
 
     // TreeView selected item event handler
-    private final ChangeListener<TreeItem<Person>> treeSelectionListener = 
-            (ov, oldValue, newValue) -> {
+    private final ChangeListener<TreeItem<Person>> treeSelectionListener = (ov, oldValue, newValue) -> {
         TreeItem<Person> treeItem = newValue;
         logger.log(Level.FINE, "selected item = {0}", treeItem);
         enableUpdateProperty.set(false);
@@ -258,4 +315,46 @@ public class PersonFXMLController implements Initializable {
         thePerson.genderProperty().bind(genderBinding);
         changeOK = true;
     };
+
+    private class ProcessAllTask extends Task<String> {
+
+        private final ObservableList<Person> processList;
+        private final StringBuilder buildList = new StringBuilder();
+
+        public ProcessAllTask(final ObservableList<Person> processList) {
+            this.processList = processList;
+        }
+
+        @Override
+        protected String call() throws Exception {
+            logger.log(Level.FINE, "Begin processing");
+            final int taskMaxCount = processList.size();
+            logger.log(Level.FINE, "processing list: {0}", processList);
+            int taskProgress = 0;
+            for (final Person person : processList) {
+                if (isCancelled()) {
+                    break;
+                }
+                // do something to each person
+                updateMessage("Processing " + person);
+                logger.log(Level.FINE, "processing: {0}", person);
+                doProcess(person);
+                buildList.append(person.toString()).append("\n");
+                // Update value property with new buildList
+                updateValue(buildList.toString());
+                updateProgress(100 * (++taskProgress) / taskMaxCount, 100);
+                Thread.sleep(500);
+            }
+            // return the final built String result
+            return buildList.toString();
+        }
+
+        // Called on the background thread
+        private void doProcess(Person p) {
+            p.setFirstname(p.getFirstname().toUpperCase());
+            p.setMiddlename(p.getMiddlename().toUpperCase());
+            p.setLastname(p.getLastname().toUpperCase());
+            p.setSuffix(p.getSuffix().toUpperCase());
+        }
+    }
 }

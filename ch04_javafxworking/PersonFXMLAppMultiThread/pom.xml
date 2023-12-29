@@ -36,7 +36,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>org.gperon.personfxmlappmultithread.PersonFXMLApp</mainClass>
+                    <mainClass>org.gperon.personfxmlapp.PersonFXMLApp</mainClass>
                 </configuration>
                 <executions>
                     <execution>

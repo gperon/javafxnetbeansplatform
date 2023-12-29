@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" prefHeight="328.0" prefWidth="630.0" xmlns:fx="http://javafx.com/fxml" fx:controller="org.gperon.personfxmlappenhancedui.PersonFXMLController">
+<AnchorPane id="AnchorPane" prefHeight="328.0" prefWidth="630.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="org.gperon.personfxmlapp.PersonFXMLController">
   <children>
     <SplitPane dividerPositions="0.43630573248407645" focusTraversable="true" prefHeight="328.0" prefWidth="630.0" style="-fx-background-color:  linear-gradient(aliceblue, lightblue);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="340.0" prefWidth="257.0">
           <children>
-            <TreeView fx:id="personTreeView" prefHeight="289.0" prefWidth="225.0" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="23.0" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="14.0" />
+            <TreeView fx:id="personTreeView" prefHeight="133.0" prefWidth="225.0" AnchorPane.bottomAnchor="188.0" AnchorPane.leftAnchor="23.0" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="5.0" />
+            <HBox id="HBox" alignment="CENTER" layoutX="7.0" layoutY="176.0" spacing="5.0">
+              <children>
+                <Button fx:id="processAllButton" mnemonicParsing="false" onAction="#processAllButtonAction" text="Process All" />
+                <ProgressBar fx:id="progressBar" prefWidth="161.0" progress="0.0" />
+              </children>
+            </HBox>
+            <TextArea fx:id="statusTextArea" editable="false" layoutX="7.0" layoutY="208.0" prefHeight="106.0" prefWidth="257.0" wrapText="true" />
+            <Label fx:id="statusMessage" layoutX="7.0" layoutY="147.0" />
           </children>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="326.0" prefWidth="351.9998779296875">
@@ -59,6 +75,7 @@
             <Label layoutX="14.0" layoutY="178.0" text="Notes" />
             <TextArea fx:id="notesTextArea" layoutX="14.0" layoutY="201.0" onKeyReleased="#handleKeyAction" prefHeight="62.0" prefWidth="303.0" wrapText="true" />
             <Button fx:id="updateButton" layoutX="14.0" layoutY="280.0" mnemonicParsing="false" onAction="#updateButtonAction" text="Update" />
+            <ProgressIndicator fx:id="updateProgressIndicator" layoutX="117.0" layoutY="272.0" />
           </children>
         </AnchorPane>
       </items>

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.gperon.personfxmlappenhancedui;
+package org.gperon.personfxmlapp;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +21,8 @@ public class PersonFXMLApp extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("PersonFXML.fxml"));
         
         Scene scene = new Scene(root);
-        stage.setTitle("Person FX Application");        
+        stage.setTitle("Person FX Application");
+        
         stage.setScene(scene);
         stage.show();
     }

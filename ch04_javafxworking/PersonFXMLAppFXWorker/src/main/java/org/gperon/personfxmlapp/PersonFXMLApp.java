@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.gperon.personfxmlappmultithread;
+package org.gperon.personfxmlapp;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
