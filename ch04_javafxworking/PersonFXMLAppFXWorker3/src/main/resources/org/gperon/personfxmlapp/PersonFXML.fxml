@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane id="AnchorPane" prefHeight="392.0" prefWidth="630.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="org.gperon.personfxmlapp.PersonFXMLController">
+  <children>
+    <SplitPane dividerPositions="0.43630573248407645" focusTraversable="true" prefHeight="328.0" prefWidth="630.0" style="-fx-background-color:  linear-gradient(aliceblue, lightblue);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="340.0" prefWidth="257.0">
+          <children>
+                  <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                  <TreeView fx:id="personTreeView" prefHeight="166.0" prefWidth="225.0" VBox.vgrow="ALWAYS" />
+                  <HBox id="HBox" alignment="CENTER" spacing="5.0">
+                    <children>
+                      <Button fx:id="processAllButton" mnemonicParsing="false" onAction="#processAllButtonAction" text="Process All" />
+                      <ProgressBar fx:id="progressBar" prefWidth="161.0" progress="0.0" />
+                        <Label fx:id="statusMessage" />
+                    </children>
+                  </HBox>
+                  <TilePane fx:id="nameDisplay" alignment="CENTER" hgap="50.0" prefHeight="353.0" prefWidth="251.0" vgap="3.0">
+                    <effect>
+                      <DropShadow color="#666666" offsetY="3.0" />
+                    </effect>
+                    <padding>
+                      <Insets top="5.0" />
+                    </padding>
+                  </TilePane>
+                     </children>
+                  </VBox>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="326.0" prefWidth="351.9998779296875">
+          <children>
+            <HBox id="HBox" alignment="CENTER_RIGHT" layoutX="31.0" layoutY="147.0" spacing="20.0">
+              <children>
+                <RadioButton fx:id="maleRadioButton" mnemonicParsing="false" onAction="#genderSelectionAction" text="Male">
+                  <toggleGroup>
+                    <ToggleGroup fx:id="genderToggleGroup" />
+                  </toggleGroup>
+                </RadioButton>
+                <RadioButton fx:id="femaleRadioButton" mnemonicParsing="false" onAction="#genderSelectionAction" text="Female" toggleGroup="$genderToggleGroup" />
+                <RadioButton fx:id="unknownRadioButton" mnemonicParsing="false" onAction="#genderSelectionAction" text="Unknown" toggleGroup="$genderToggleGroup" />
+              </children>
+            </HBox>
+            <VBox id="VBox" alignment="TOP_CENTER" layoutX="14.0" layoutY="10.0" spacing="10.0">
+              <children>
+                <HBox id="HBox" alignment="CENTER_RIGHT" spacing="5.0">
+                  <children>
+                    <Label text="First" />
+                    <TextField fx:id="firstnameTextField" onKeyReleased="#handleKeyAction" prefWidth="248.0" />
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="CENTER_RIGHT" spacing="5.0">
+                  <children>
+                    <Label text="Middle" />
+                    <TextField fx:id="middlenameTextField" onKeyReleased="#handleKeyAction" prefWidth="248.0" />
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="CENTER_RIGHT" spacing="5.0">
+                  <children>
+                    <Label text="Last" />
+                    <TextField fx:id="lastnameTextField" onKeyReleased="#handleKeyAction" prefWidth="248.0" />
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="CENTER_RIGHT" spacing="5.0">
+                  <children>
+                    <Label text="Suffix" />
+                    <TextField fx:id="suffixTextField" onKeyReleased="#handleKeyAction" prefWidth="248.0" />
+                  </children>
+                </HBox>
+              </children>
+            </VBox>
+            <Label layoutX="14.0" layoutY="178.0" text="Notes" />
+            <TextArea fx:id="notesTextArea" layoutX="14.0" layoutY="201.0" onKeyReleased="#handleKeyAction" prefHeight="90.0" prefWidth="303.0" wrapText="true" />
+            <Button fx:id="updateButton" layoutX="14.0" layoutY="328.0" mnemonicParsing="false" onAction="#updateButtonAction" text="Update" />
+            <ProgressIndicator fx:id="updateProgressIndicator" layoutX="117.0" layoutY="320.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+  </children>
+</AnchorPane>
