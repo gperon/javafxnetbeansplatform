@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox id="VBox" prefHeight="200" prefWidth="320" 
+              xmlns:fx="http://javafx.com/fxml" 
+              fx:controller="org.gperon.personfxappbound.PersonFXBoundController"
+              alignment="CENTER" spacing="20"  
+              style="-fx-background-color: 
+                linear-gradient(aliceblue, lightblue);">
+    <Label fx:id="margeLabel" />
+    <Button text="Change Marge" 
+                    onAction="#changeButtonAction" />
+    <Button text="Reset Marge" 
+                    onAction="#resetButtonAction" />
+</VBox>
+    
