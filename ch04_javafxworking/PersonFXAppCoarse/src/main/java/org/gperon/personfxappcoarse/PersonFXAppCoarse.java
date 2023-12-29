@@ -4,8 +4,8 @@
  */
 package org.gperon.personfxappcoarse;
 
-import com.asgteach.familytree.model.FamilyTreeManager;
-import com.asgteach.familytree.model.Person;
+import org.gperon.familytree.model.FamilyTreeManager;
+import org.gperon.familytree.model.Person;
 import javafx.collections.MapChangeListener;
 
 /**

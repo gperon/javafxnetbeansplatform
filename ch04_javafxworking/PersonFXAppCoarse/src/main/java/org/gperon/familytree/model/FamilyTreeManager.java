@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.asgteach.familytree.model;
+package org.gperon.familytree.model;
 
 import java.util.ArrayList;
 import java.util.List;
