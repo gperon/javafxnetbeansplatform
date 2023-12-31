@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+
+<StackPane id="StackPane" prefHeight="200" prefWidth="400"           
+           xmlns:fx="http://javafx.com/fxml" 
+           fx:controller="org.gperon.fxdemomodule.MyRectangleFXController">
+    <children>
+        <Rectangle fx:id="rectangle" width="200" height="100"
+                   arcWidth="30" arcHeight="30"
+                   style="-fx-fill: linear-gradient(#ffd65b, #e68400), 
+            linear-gradient(#ffef84, #f2ba44),
+            linear-gradient(#ffea6a, #efaa22),
+            linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
+            linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), 
+            rgba(255,255,255,0));" >  
+            <effect>
+                <DropShadow color="GRAY" offsetX="5.0" offsetY="5.0" />
+            </effect>
+        </Rectangle>        
+        <Text text="My Rectangle"> 
+            <effect>
+                <Reflection />
+            </effect>           
+            <font>
+                <Font name="Verdana Bold" size="18.0" />
+            </font>                      
+        </Text>       
+    </children>
+</StackPane>
