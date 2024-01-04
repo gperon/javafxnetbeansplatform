@@ -26,9 +26,9 @@ public class PersonNode extends AbstractNode implements PropertyChangeListener {
 
     private static final Logger logger = Logger.getLogger(PersonNode.class.getName());
 
-    public PersonNode(Person person) throws IntrospectionException {
+    public PersonNode(Person person) {
         super(Children.LEAF, Lookups.singleton(person));
-        setIconBaseWithExtension("org/gperon/familytree/genderviewer/resources/PersonIcon.png");
+        setIconBaseWithExtension("org/gperon/familytree/genderviewer/resources/personIcon.png");
         setName(String.valueOf(person.getId()));
         setDisplayName(person.toString());
         setShortDescription(Bundle.HINT_PersonNode());
