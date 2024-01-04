@@ -1,8 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/NetBeansModuleDevelopment-files/templateTopComponent637.java to edit this template
- */
-package org.gperon.familytree.genderview;
+package org.gperon.familytree.genderviewer;
 
 import java.awt.BorderLayout;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -11,7 +7,7 @@ import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
-import org.openide.explorer.view.OutlineView;
+import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
@@ -19,7 +15,7 @@ import org.openide.util.NbBundle.Messages;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.gperon.familytree.genderview//Gender//EN",
+        dtd = "-//org.gperon.familytree.genderviewer//Gender//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -28,7 +24,7 @@ import org.openide.util.NbBundle.Messages;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)
-@ActionID(category = "Window", id = "org.gperon.familytree.genderview.GenderTopComponent")
+@ActionID(category = "Window", id = "org.gperon.familytree.genderviewer.GenderTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GenderAction",
@@ -52,6 +48,11 @@ public final class GenderTopComponent extends TopComponent implements ExplorerMa
         add(view, BorderLayout.CENTER);
         associateLookup(ExplorerUtils.createLookup(em, this.getActionMap()));
         em.setRootContext(new RootNode());
+        // expand second level of node programmatically
+        for (Node node : em.getRootContext().getChildren().getNodes()) {
+            view.expandNode(node);
+        }
+        
     }
 
     /**

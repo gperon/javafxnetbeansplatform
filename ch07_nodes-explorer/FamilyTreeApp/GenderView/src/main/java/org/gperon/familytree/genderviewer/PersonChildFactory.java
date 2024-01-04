@@ -1,4 +1,4 @@
-package org.gperon.familytree.genderview;
+package org.gperon.familytree.genderviewer;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -21,8 +21,10 @@ public class PersonChildFactory extends ChildFactory<Person> {
 
     private final FamilyTreeManager ftm;
     private static final Logger logger = Logger.getLogger(PersonChildFactory.class.getName());
+    private final Person.Gender gender;
 
-    public PersonChildFactory() {
+    public PersonChildFactory(Person.Gender gender) {
+        this.gender = gender;
         this.ftm = Lookup.getDefault().lookup(FamilyTreeManager.class);
         if (ftm == null) {
             logger.log(Level.SEVERE, "Cannot get FamilyTreeManager object");
@@ -33,8 +35,12 @@ public class PersonChildFactory extends ChildFactory<Person> {
 
     @Override
     protected boolean createKeys(List<Person> list) {
-        list.addAll(ftm.getAllPeople());
-        logger.log(Level.FINER, "createKeys called: {0}", ftm.getAllPeople());
+        ftm.getAllPeople().stream().forEach((Person p) -> {
+            if (p.getGender().equals(gender)) {
+                list.add(p);
+            }
+        });
+        logger.log(Level.INFO, "createKeys called: {0}", list);
         return true;
     }
 

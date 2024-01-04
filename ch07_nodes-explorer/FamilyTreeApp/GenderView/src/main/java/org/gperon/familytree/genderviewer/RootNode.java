@@ -1,4 +1,4 @@
-package org.gperon.familytree.genderview;
+package org.gperon.familytree.genderviewer;
 
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -15,7 +15,7 @@ import org.openide.util.NbBundle;
 public class RootNode extends AbstractNode {
 
     public RootNode() {
-        super(Children.create(new PersonChildFactory(), false));
+        super(Children.create(new GenderChildFactory(), false));
         setIconBaseWithExtension("org/gperon/familytree/genderviewer/resources/personIcon.png");
         setDisplayName(Bundle.LBL_RootNode());
         setShortDescription(Bundle.HINT_RootNode());

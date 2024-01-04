@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: org/gperon/familytree/genderview/Bundle.properties
+OpenIDE-Module-Localizing-Bundle: org/gperon/familytree/genderviewer/Bundle.properties
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
 
