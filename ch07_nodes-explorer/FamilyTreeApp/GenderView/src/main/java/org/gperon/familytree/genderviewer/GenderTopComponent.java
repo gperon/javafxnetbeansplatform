@@ -6,14 +6,11 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
-import org.openide.explorer.view.ChoiceView;
-import org.openide.explorer.view.ContextTreeView;
-import org.openide.explorer.view.IconView;
-import org.openide.explorer.view.ListView;
-import org.openide.explorer.view.MenuView;
+import org.openide.explorer.propertysheet.PropertySheetView;
+import org.openide.explorer.view.BeanTreeView;
+import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -56,40 +53,15 @@ public final class GenderTopComponent extends TopComponent implements ExplorerMa
         initComponents();
         setName(Bundle.CTL_GenderTopComponent());
         setToolTipText(Bundle.HINT_GenderTopComponent());
-        switch (mv) {
-            case CONTEXT_TREE:
-                ContextTreeView view = new ContextTreeView();       // use for master
-                add(view, BorderLayout.CENTER);             // use for master
-                break;
-            case MENU:
-                MenuView menu = new MenuView();           // use for mater
-                add(menu, BorderLayout.CENTER);             // use for master
-                break;
-            default:
-                throw new AssertionError();
-        }
-        switch (dv) {
-            case LIST:
-                ListView list = new ListView();         // use for detail
-                add(list, BorderLayout.SOUTH);              // use for detail
-                break;
-            case ICON:
-                IconView icon = new IconView();           // use for detail
-                add(icon, BorderLayout.SOUTH);              // use for detail
-                break;
-            case CHOICE:
-                ChoiceView choice = new ChoiceView();     // use for detail
-                add(choice, BorderLayout.EAST);    // use for detail
-                break;
-            default:
-                throw new AssertionError();
-        }
+      
+        BeanTreeView view = new BeanTreeView();
+        PropertySheetView propView = new PropertySheetView();
+        add(view, BorderLayout.WEST);
+        add(propView, BorderLayout.CENTER);
         associateLookup(ExplorerUtils.createLookup(em, this.getActionMap()));
         em.setRootContext(new RootNode());
-        // open the Properties Window by default
-        TopComponent tc = WindowManager.getDefault().findTopComponent("properties");
-        if (tc != null) {
-            tc.open();
+        for (Node node : em.getRootContext().getChildren().getNodes()) {
+            view.expandNode(node);            
         }
 
     }
