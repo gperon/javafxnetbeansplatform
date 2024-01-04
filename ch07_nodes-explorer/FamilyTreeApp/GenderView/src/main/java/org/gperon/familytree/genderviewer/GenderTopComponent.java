@@ -6,11 +6,9 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
-import org.openide.explorer.view.BeanTreeView;
-import org.openide.nodes.Node;
+import org.openide.explorer.view.OutlineView;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -40,26 +38,19 @@ import org.openide.windows.WindowManager;
 public final class GenderTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private final ExplorerManager em = new ExplorerManager();
-    private final BeanTreeView view;
 
     public GenderTopComponent() {
         initComponents();
         setName(Bundle.CTL_GenderTopComponent());
         setToolTipText(Bundle.HINT_GenderTopComponent());
-        filterText.setToolTipText(Bundle.HINT_FilterTextField());
-        view = new BeanTreeView();
+        OutlineView view = new OutlineView("People");
+        view.setPropertyColumns(
+                "gender", "Gender",
+                "notes", "Notes"
+        );
         add(view, BorderLayout.CENTER);
         associateLookup(ExplorerUtils.createLookup(em, this.getActionMap()));
         em.setRootContext(new RootNode());
-        // expand second level of node programmatically
-        for (Node node : em.getRootContext().getChildren().getNodes()) {
-            view.expandNode(node);
-        }
-        // open the Properties Window by default
-        TopComponent tc = WindowManager.getDefault().findTopComponent("properties");
-        if (tc != null) {
-            tc.open();
-        }
 
     }
 
@@ -71,50 +62,10 @@ public final class GenderTopComponent extends TopComponent implements ExplorerMa
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        filterText = new javax.swing.JTextField();
-
         setLayout(new java.awt.BorderLayout());
-
-        jPanel1.setLayout(new java.awt.GridLayout());
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, "Filter:");
-        jPanel1.add(jLabel1);
-
-        filterText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                filterTextActionPerformed(evt);
-            }
-        });
-        jPanel1.add(filterText);
-
-        add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void filterTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterTextActionPerformed
-        Node root = em.getRootContext();
-        Node newRoot;
-        if (root instanceof PersonFilterNode) {
-            root = ((PersonFilterNode) root).getOriginal();
-        }
-        if (filterText.getText().isEmpty()) {
-            // use the original root
-            newRoot = root;
-        } else {
-            // make case insensitive
-            newRoot = new PersonFilterNode(root, filterText.getText().toLowerCase());
-        }
-        em.setRootContext(newRoot);
-        for (Node node : em.getRootContext().getChildren().getNodes()) {
-            view.expandNode(node);
-        }
-    }//GEN-LAST:event_filterTextActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField filterText;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
