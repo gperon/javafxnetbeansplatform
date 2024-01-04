@@ -1,8 +1,8 @@
 package org.gperon.familytree.genderviewer;
 
-import java.beans.IntrospectionException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gperon.familytree.model.FamilyTreeManager;
@@ -94,19 +94,66 @@ public class PersonNode extends AbstractNode implements PropertyChangeListener {
         sheet.put(readOnlySet);
 
         try {
-            // create property support for the Names
-            Property<String> firstnameProp = new PropertySupport.Reflection<String>(person, String.class, "firstname");
-            Property<String> middlenameProp = new PropertySupport.Reflection<String>(person, String.class, "middlename");
-            Property<String> lastnameProp = new PropertySupport.Reflection<String>(person, String.class, "lastname");
-            Property<String> suffixProp = new PropertySupport.Reflection<String>(person, String.class, "suffix");
+            // create read-only property support for the Names
+            Property<String> firstnameProp = new PropertySupport.ReadOnly<String>(
+                    "firstname", // Name of the property 
+                    String.class, // Type of property value 
+                    "first name", // Display name
+                    "The person's first name") { // Description                   
+                @Override
+                public String getValue() throws IllegalAccessException, InvocationTargetException {
+                    return person.getFirstname();
+                }
+            };
+
+            Property<String> middlenameProp = new PropertySupport.ReadOnly<String>(
+                    "middlename", // Name of the property 
+                    String.class, // Type of property value 
+                    "middle name", // Display name
+                    "The person's middle name") { // Description                   
+                @Override
+                public String getValue() throws IllegalAccessException, InvocationTargetException {
+                    return person.getMiddlename();
+                }
+            };
+            Property<String> lastnameProp = new PropertySupport.ReadOnly<String>(
+                    "lastname", // Name of the property 
+                    String.class, // Type of property value 
+                    "last name", // Display name
+                    "The person's last name") { // Description                   
+                @Override
+                public String getValue() throws IllegalAccessException, InvocationTargetException {
+                    return person.getLastname();
+                }
+            };
+            Property<String> suffixProp = new PropertySupport.ReadOnly<String>(
+                    "suffix", // Name of the property 
+                    String.class, // Type of property value 
+                    "name suffix", // Display name
+                    "The person's name suffix") { // Description                   
+                @Override
+                public String getValue() throws IllegalAccessException, InvocationTargetException {
+                    return person.getSuffix();
+                }
+            };
 
             setNames.put(firstnameProp);
             setNames.put(middlenameProp);
             setNames.put(lastnameProp);
             setNames.put(suffixProp);
 
-            // create property support for gender and notes
-            Property<Person.Gender> genderProp = new PropertySupport.Reflection<Person.Gender>(person, Person.Gender.class, "gender");
+            // create read-only property support for gender 
+            Property<Person.Gender> genderProp = new PropertySupport.ReadOnly<Person.Gender>(
+                    "gender", // Name of the property 
+                    Person.Gender.class, // Type of property value 
+                    "gender", // Display name
+                    "The person's gender") { // Description                   
+                @Override
+                public Person.Gender getValue() throws IllegalAccessException, InvocationTargetException {
+                    return person.getGender();
+                }
+            };
+            // create read-write property support for notes
             Property<String> notesProp = new PropertySupport.Reflection<String>(person, String.class, "notes");
 
             infoSet.put(genderProp);
@@ -120,5 +167,4 @@ public class PersonNode extends AbstractNode implements PropertyChangeListener {
         }
         return sheet;
     }
-
 }

@@ -47,6 +47,7 @@
         <module>FamilyTreeModel</module>
         <module>FamilyTreeManagerImpl</module>
         <module>GenderView</module>
+        <module>SelectionHistory</module>
     </modules>
     <repositories>
         <repository>

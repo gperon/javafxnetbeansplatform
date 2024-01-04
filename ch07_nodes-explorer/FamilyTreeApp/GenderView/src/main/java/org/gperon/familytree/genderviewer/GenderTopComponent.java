@@ -6,11 +6,11 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
-import org.openide.explorer.propertysheet.PropertySheetView;
-import org.openide.explorer.view.BeanTreeView;
+import org.openide.explorer.view.OutlineView;
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -54,16 +54,22 @@ public final class GenderTopComponent extends TopComponent implements ExplorerMa
         setName(Bundle.CTL_GenderTopComponent());
         setToolTipText(Bundle.HINT_GenderTopComponent());
       
-        BeanTreeView view = new BeanTreeView();
-        PropertySheetView propView = new PropertySheetView();
-        add(view, BorderLayout.WEST);
-        add(propView, BorderLayout.CENTER);
+        OutlineView view = new OutlineView("People");
+        view.setPropertyColumns(
+                "notes", "Notes"
+                );
+        add(view, BorderLayout.CENTER);
         associateLookup(ExplorerUtils.createLookup(em, this.getActionMap()));
         em.setRootContext(new RootNode());
+        // expand the GenderNodes
         for (Node node : em.getRootContext().getChildren().getNodes()) {
             view.expandNode(node);            
         }
-
+        // open the Properties Window by default
+        TopComponent tc = WindowManager.getDefault().findTopComponent("properties");
+        if (tc != null) {
+            tc.open();
+        }
     }
 
     /**
