@@ -1,5 +1,6 @@
 package org.gperon.familytree.genderviewer;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -46,9 +47,13 @@ public class PersonChildFactory extends ChildFactory<Person> {
 
     @Override
     protected Node createNodeForKey(Person key) {
-        logger.log(Level.FINER, "createNodeForKey: {0}", key);
-        PersonNode node = new PersonNode(key);
-        key.addPropertyChangeListener(WeakListeners.propertyChange(node, key));
+        PersonNode node = null;
+        try {
+            node = new PersonNode(key);
+            key.addPropertyChangeListener(WeakListeners.propertyChange(node, key));
+        } catch (IntrospectionException ex) {
+            logger.log(Level.WARNING, "IntrospectionException: {0}", ex);
+        }
         return node;
     }
     // PropertyChangeListener for FamilyTreeManager

@@ -10,6 +10,7 @@ import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -23,7 +24,7 @@ import org.openide.util.NbBundle.Messages;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true)
+@TopComponent.Registration(mode = "editor", openAtStartup = true)
 @ActionID(category = "Window", id = "org.gperon.familytree.genderviewer.GenderTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -52,7 +53,12 @@ public final class GenderTopComponent extends TopComponent implements ExplorerMa
         for (Node node : em.getRootContext().getChildren().getNodes()) {
             view.expandNode(node);
         }
-        
+        // open the Properties Window by default
+        TopComponent tc = WindowManager.getDefault().findTopComponent("properties");
+        if (tc != null) {
+            tc.open();
+        }
+
     }
 
     /**

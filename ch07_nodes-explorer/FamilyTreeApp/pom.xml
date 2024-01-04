@@ -46,7 +46,6 @@
         <module>application</module>
         <module>FamilyTreeModel</module>
         <module>FamilyTreeManagerImpl</module>
-        <module>PersonEditor</module>
         <module>GenderView</module>
     </modules>
     <repositories>
